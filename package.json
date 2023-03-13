@@ -1,0 +1,33 @@
+{
+  "name": "asyncapi-middleware",
+  "version": "1.0.0",
+  "description": "Create routes and validation for an express-like async server",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "collectCoverage": true
+  },
+  "author": "MFT",
+  "license": "MIT",
+  "keywords": [
+    "AsyncAPI",
+    "kafka-express",
+    "rabbitmq-express",
+    "Express",
+    "middleware"
+  ],
+  "homepage": "https://github.com/ClearEyesFullHearts/asyncapi-middleware#readme",
+  "dependencies": {
+    "@asyncapi/parser": "^1.18.1",
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.35.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "jest": "^29.4.3"
+  }
+}
