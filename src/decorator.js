@@ -23,7 +23,6 @@ async function decorateApplication(app, asyncApiDoc, options = {
   if (!(api instanceof AsyncAPIDocument)) {
     api = await parse(asyncApiDoc);
   }
-  // const api = await parse(asyncApiDoc);
 
   const {
     tag = '', controllers = '', stubMiddleware = false, requireController = true,
