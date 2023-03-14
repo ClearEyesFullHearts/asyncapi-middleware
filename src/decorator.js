@@ -16,14 +16,18 @@ const callOperation = require('./middleware/operations');
 
 const CONTROLLER_EXT = 'x-operation-controller';
 
-async function decorateApplication(app, asyncApiDoc, options = { tag: '', controllers: '', stubMiddleware: true }) {
+async function decorateApplication(app, asyncApiDoc, options = {
+  tag: '', controllers: '', stubMiddleware: false, requireController: true,
+}) {
   let api = asyncApiDoc;
   if (!(api instanceof AsyncAPIDocument)) {
     api = await parse(asyncApiDoc);
   }
   // const api = await parse(asyncApiDoc);
 
-  const { tag = '', controllers = '', stubMiddleware = true } = options;
+  const {
+    tag = '', controllers = '', stubMiddleware = false, requireController = true,
+  } = options;
 
   const chans = api.channelNames();
   const listeners = chans.reduce((prev, channelName) => {
@@ -75,8 +79,10 @@ async function decorateApplication(app, asyncApiDoc, options = { tag: '', contro
     const middlewares = [
       validateParams(parametersSchema),
       validateBody(payloadSchema),
-      callOperation(operation, controllers, stubMiddleware),
     ];
+    if (requireController) {
+      middlewares.push(callOperation(operation, controllers, stubMiddleware));
+    }
     app.use(route, middlewares);
   }
 

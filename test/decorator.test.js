@@ -10,7 +10,7 @@ const MockApp = require('./utils/mockApp');
 describe('decorator tests', () => {
   test('decorator should decorate the application from a json object', async () => {
     const app = new MockApp();
-    await decorator(app, {
+    const doc = {
       asyncapi: '2.5.0',
       info: {
         title: 'Streetlights API Simplified',
@@ -52,7 +52,8 @@ describe('decorator tests', () => {
           },
         },
       },
-    }, { stubMiddleware: false, controllers: 'test/utils/' });
+    };
+    await decorator(app, doc, { controllers: 'test/utils/' });
 
     expect(app.stack.length).toBe(3);
   });
@@ -79,7 +80,7 @@ describe('decorator tests', () => {
                   format: date-time
   `;
     const app = new MockApp();
-    await decorator(app, text);
+    await decorator(app, text, { stubMiddleware: true });
 
     expect(app.stack.length).toBe(3);
   });
@@ -87,7 +88,7 @@ describe('decorator tests', () => {
   test('decorator should decorate the application from file', async () => {
     const text = fs.readFileSync(`${__dirname}/utils/api.yaml`, 'utf8');
     const app = new MockApp();
-    await decorator(app, text);
+    await decorator(app, text, { stubMiddleware: true });
 
     expect(app.stack.length).toBe(12);
   });
@@ -95,7 +96,7 @@ describe('decorator tests', () => {
   test('decorator should decorate the application with tagged operations', async () => {
     const text = fs.readFileSync(`${__dirname}/utils/api.yaml`, 'utf8');
     const app = new MockApp();
-    await decorator(app, text, { tag: 'myApp' });
+    await decorator(app, text, { stubMiddleware: true, tag: 'myApp' });
 
     expect(app.stack.length).toBe(6);
   });
@@ -104,14 +105,14 @@ describe('decorator tests', () => {
     const text = fs.readFileSync(`${__dirname}/utils/api.yaml`, 'utf8');
     const doc = await parse(text);
     const app = new MockApp();
-    await decorator(app, doc);
+    await decorator(app, doc, { stubMiddleware: true });
 
     expect(app.stack.length).toBe(12);
   });
 
   test('decorator should not decorate the application without publish', async () => {
     const app = new MockApp();
-    await decorator(app, {
+    const doc = {
       asyncapi: '2.5.0',
       info: {
         title: 'Streetlights API Simplified',
@@ -151,7 +152,8 @@ describe('decorator tests', () => {
           },
         },
       },
-    });
+    };
+    await decorator(app, doc, { stubMiddleware: true });
 
     expect(app.stack.length).toBe(0);
   });
@@ -181,5 +183,13 @@ describe('decorator tests', () => {
       return;
     }
     expect(true).toBeFalsy();
+  });
+
+  test('decorator should decorate the application without operations', async () => {
+    const text = fs.readFileSync(`${__dirname}/utils/api.yaml`, 'utf8');
+    const app = new MockApp();
+    await decorator(app, text, { requireController: false });
+
+    expect(app.stack.length).toBe(8);
   });
 });

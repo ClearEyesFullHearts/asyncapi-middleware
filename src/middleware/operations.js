@@ -10,23 +10,48 @@
  */
 
 const path = require('node:path');
+const fs = require('node:fs');
 
-function operations(operation, controllerDir, useStub = true) {
+function returnStub(id, reason) {
+  console.warn(`A stub middleware is created for operation ${id} because: ${reason}`);
+  return (req, res, next) => {
+    console.log(`Here should be the handler for operation ${id} called by ${req.path}`);
+    next();
+  };
+}
+
+function operations(operation, controllerDir, useStub = false) {
   const { id, controller } = operation;
-  const controllerPath = path.join(controllerDir, controller);
+  const controllerPath = path.resolve(path.join(controllerDir, controller));
+  if (!id) {
+    if (useStub) {
+      return returnStub(id, 'Missing information [operationId]');
+    }
+    throw new Error('Missing information [operationId]: operation middleware cannot be created');
+  }
+
+  let operationController;
   try {
-    const operationMiddleware = require(path.resolve(controllerPath));
-    return operationMiddleware[id];
+    // eslint-disable-next-line
+    operationController = require(controllerPath);
   } catch (err) {
     if (useStub) {
-      // return stub
-      return (req, res, next) => {
-        console.log(`Here should be the handler for operation ${id} called by ${req.path}`);
-        next();
-      };
+      return returnStub(id, `Impossible to load the controller at ${controllerPath}`);
     }
-    throw new Error(`Missing controller at ${path.resolve(controllerPath)} for ${id}`);
+    throw new Error(`Impossible to load the controller at ${controllerPath} for operation ${id}`);
   }
+  const fn = operationController[id];
+  if (!fn || typeof fn !== 'function') {
+    if (useStub) {
+      return returnStub(id, 'The operation is not a function');
+    }
+    throw new Error(`The operation ${id} called on the controller ${controllerPath} is not a function`);
+  }
+  // function to create middleware(s) i.e () => return middleware
+  if (fn.length === 0) return fn();
+
+  // directly a middleware i.e (req, res, next) => do something
+  return fn;
 }
 
 module.exports = operations;
