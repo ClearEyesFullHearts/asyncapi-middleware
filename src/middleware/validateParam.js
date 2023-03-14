@@ -9,6 +9,7 @@
  * @private
  */
 const Ajv = require('ajv');
+const ValidationError = require('../validationError');
 
 const ajv = new Ajv({ coerceTypes: true });
 
@@ -26,7 +27,12 @@ function validateParams(paramsSchema) {
       next();
     } else {
       const [err] = validate.errors;
-      next(new Error(`Parameter validation error on ${err.schemaPath}: ${err.message}`));
+      const invalid = new ValidationError(
+        ValidationError.PARAMS_VALIDATION_FAILURE,
+        `Parameter validation error on ${err.schemaPath}: ${err.message}`,
+        err,
+      );
+      next(invalid);
     }
   };
 }

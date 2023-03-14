@@ -10,6 +10,7 @@
  */
 const Ajv = require('ajv');
 const addFormats = require('ajv-formats');
+const ValidationError = require('../validationError');
 
 const ajv = new Ajv();
 addFormats(ajv);
@@ -27,7 +28,12 @@ function validateBody(payloadSchema) {
       next();
     } else {
       const [err] = validate.errors;
-      next(new Error(`Body validation error on ${err.schemaPath}: ${err.message}`));
+      const invalid = new ValidationError(
+        ValidationError.BODY_VALIDATION_FAILURE,
+        `Body validation error on ${err.schemaPath}: ${err.message}`,
+        err,
+      );
+      next(invalid);
     }
   };
 }

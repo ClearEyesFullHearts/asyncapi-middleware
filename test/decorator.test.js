@@ -2,7 +2,7 @@ const {
   describe, expect, test,
 } = require('@jest/globals');
 const fs = require('fs');
-
+const { parse } = require('@asyncapi/parser');
 const decorator = require('../src/decorator');
 
 const MockApp = require('./utils/mockApp');
@@ -34,6 +34,7 @@ describe('decorator tests', () => {
           publish: {
             summary: 'Inform about environmental lighting conditions for a particular streetlight.',
             operationId: 'onLightMeasured',
+            'x-operation-controller': 'testController',
             message: {
               name: 'LightMeasured',
               payload: {
@@ -51,7 +52,7 @@ describe('decorator tests', () => {
           },
         },
       },
-    });
+    }, { stubMiddleware: false, controllers: 'test/utils/' });
 
     expect(app.stack.length).toBe(3);
   });
@@ -91,6 +92,23 @@ describe('decorator tests', () => {
     expect(app.stack.length).toBe(12);
   });
 
+  test('decorator should decorate the application with tagged operations', async () => {
+    const text = fs.readFileSync(`${__dirname}/utils/api.yaml`, 'utf8');
+    const app = new MockApp();
+    await decorator(app, text, { tag: 'myApp' });
+
+    expect(app.stack.length).toBe(6);
+  });
+
+  test('decorator should decorate the application from AsyncAPIDocument', async () => {
+    const text = fs.readFileSync(`${__dirname}/utils/api.yaml`, 'utf8');
+    const doc = await parse(text);
+    const app = new MockApp();
+    await decorator(app, doc);
+
+    expect(app.stack.length).toBe(12);
+  });
+
   test('decorator should not decorate the application without publish', async () => {
     const app = new MockApp();
     await decorator(app, {
@@ -116,7 +134,6 @@ describe('decorator tests', () => {
         'light.measured': {
           subscribe: {
             summary: 'Inform about environmental lighting conditions for a particular streetlight.',
-            operationId: 'onLightMeasured',
             message: {
               name: 'LightMeasured',
               payload: {

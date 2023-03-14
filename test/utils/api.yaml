@@ -43,6 +43,8 @@ channels:
       streetlightId:
         $ref: '#/components/parameters/streetlightId'
     publish:
+      tags:
+        - name: myApp
       summary: Inform about environmental lighting conditions of a particular streetlight.
       operationId: receiveLightMeasurement
       traits:
@@ -77,6 +79,8 @@ channels:
       streetlightId:
         $ref: '#/components/parameters/streetlightId'
     publish:
+      tags:
+        - name: myApp
       operationId: dimLight
       traits:
         - $ref: '#/components/operationTraits/kafka'

@@ -8,19 +8,29 @@
  * Module dependencies.
  * @private
  */
-const parser = require('@asyncapi/parser');
+const { parse, AsyncAPIDocument } = require('@asyncapi/parser');
 
 const validateParams = require('./middleware/validateParam');
 const validateBody = require('./middleware/validateBody');
 const callOperation = require('./middleware/operations');
 
-async function decorateApplication(app, asyncApiDoc) {
-  const api = await parser.parse(asyncApiDoc);
+const CONTROLLER_EXT = 'x-operation-controller';
+
+async function decorateApplication(app, asyncApiDoc, options = { tag: '', controllers: '', stubMiddleware: true }) {
+  let api = asyncApiDoc;
+  if (!(api instanceof AsyncAPIDocument)) {
+    api = await parse(asyncApiDoc);
+  }
+  // const api = await parse(asyncApiDoc);
+
+  const { tag = '', controllers = '', stubMiddleware = true } = options;
 
   const chans = api.channelNames();
   const listeners = chans.reduce((prev, channelName) => {
     const chan = api.channel(channelName);
     if (chan.hasPublish()) {
+      const ope = chan.publish();
+      if (tag && !ope.hasTag(tag)) return prev;
       // Replace AsyncAPI syntax for path parameters with Express' version
       const routeName = channelName.replace(/{/g, ':').replace(/}/g, '');
       const msgParams = Object.keys(chan.parameters()).reduce((prevP, pName) => {
@@ -41,10 +51,14 @@ async function decorateApplication(app, asyncApiDoc) {
         properties: {},
         required: [],
       });
+
       prev.push({
         route: routeName,
-        operationId: chan.publish().id(),
-        payloadSchema: chan.publish().message().originalPayload(),
+        operation: {
+          id: ope.id(),
+          controller: ope.hasExtension(CONTROLLER_EXT) ? ope.ext(CONTROLLER_EXT) : '',
+        },
+        payloadSchema: ope.message().originalPayload(),
         parametersSchema: msgParams,
       });
       return prev;
@@ -55,12 +69,13 @@ async function decorateApplication(app, asyncApiDoc) {
   const l = listeners.length;
   for (let i = 0; i < l; i += 1) {
     const {
-      route, parametersSchema, payloadSchema, operationId,
+      route, parametersSchema, payloadSchema, operation,
     } = listeners[i];
+
     const middlewares = [
       validateParams(parametersSchema),
       validateBody(payloadSchema),
-      callOperation(operationId),
+      callOperation(operation, controllers, stubMiddleware),
     ];
     app.use(route, middlewares);
   }
