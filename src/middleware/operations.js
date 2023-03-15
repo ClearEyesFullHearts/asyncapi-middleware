@@ -10,12 +10,11 @@
  */
 
 const path = require('node:path');
-const fs = require('node:fs');
 
 function returnStub(id, reason) {
   console.warn(`A stub middleware is created for operation ${id} because: ${reason}`);
   return (req, res, next) => {
-    console.log(`Here should be the handler for operation ${id} called by ${req.path}`);
+    console.log(`Here should be the handler for operation ${id} called by ${req.path} with these infos ${req.api}`);
     next();
   };
 }

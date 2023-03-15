@@ -16,9 +16,7 @@ const callOperation = require('./middleware/operations');
 
 const CONTROLLER_EXT = 'x-operation-controller';
 
-async function decorateApplication(app, asyncApiDoc, options = {
-  tag: '', controllers: '', stubMiddleware: false, requireController: true,
-}) {
+async function decorateApplication(app, asyncApiDoc, options = {}) {
   let api = asyncApiDoc;
   if (!(api instanceof AsyncAPIDocument)) {
     api = await parse(asyncApiDoc);
