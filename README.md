@@ -18,7 +18,7 @@ await asyncApi(app, doc, { stubMiddleware: true });
 
 app.listen(options);
 ```
-This will validate and parse your AsyncAPI file (`myAsyncAPIFile.yaml`), then create a route for each channel with a publish operation defined in that file.  
+This will validate and parse your AsyncAPI file (`myAsyncAPIFile.yaml`), then create a route for each channel with a publish operation defined in that file. The validation and parsing of the file is done by [@asyncapi/parser](https://www.npmjs.com/package/@asyncapi/parser).  
 This route will validate the parameters of the route and the body of the message with the parameter and payload schemas defined in the file and add them to the `api` property of the request object. The validation itself is done by [ajv](https://www.npmjs.com/package/ajv).  
 It will then add a "stub" middleware on each route.  
   
