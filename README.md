@@ -1,4 +1,4 @@
-# asyncapi-middleware
+# asyncapi-sub-middleware
 Create routes and validation for an express-like async server
 
 ## Summary
@@ -8,7 +8,7 @@ Freely inspired by [swagger-tools](https://www.npmjs.com/package/swagger-tools)
 # Usage
 ```javascript
 const rabbitserver = require('rabbitmq-express');
-const asyncApi = require('asyncapi-middleware');
+const asyncApi = require('asyncapi-sub-middleware');
 
 const app = rabbitserver();
 
@@ -23,10 +23,10 @@ This route will validate the parameters of the route and the body of the message
 It will then add a "stub" middleware on each route.  
   
 # Documentation
-## asyncapi-middleware
+## asyncapi-sub-middleware
 The module exports a function that takes your express-like application, an AsyncAPI document and options.  
 ```javascript
-require('asyncapi-middleware')(application, document, options)
+require('asyncapi-sub-middleware')(application, document, options)
 ```
 ### `application`
 Any application using middlewares can be used, i.e. there should be a `.use(route, [middlewares])` function available.  
@@ -68,7 +68,7 @@ If `stubMiddleware` is set to true, a stub middleware will be mounted on each ro
 ## ValidationError
 The module exports the error class that is thrown in case of a validation error.    
 ```javascript
-const { ValidationError } = require('asyncapi-middleware');
+const { ValidationError } = require('asyncapi-sub-middleware');
 if (err instanceof ValidationError) // That's our error.
 ```
   

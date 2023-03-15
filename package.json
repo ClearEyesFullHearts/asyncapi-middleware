@@ -1,5 +1,5 @@
 {
-  "name": "asyncapi-middleware",
+  "name": "asyncapi-sub-middleware",
   "version": "1.0.0",
   "description": "Create routes and validation for an express-like async server",
   "main": "index.js",
@@ -16,7 +16,9 @@
     "kafka-express",
     "rabbitmq-express",
     "Express",
-    "middleware"
+    "middleware",
+    "consumer",
+    "subscribe"
   ],
   "homepage": "https://github.com/ClearEyesFullHearts/asyncapi-middleware#readme",
   "dependencies": {
