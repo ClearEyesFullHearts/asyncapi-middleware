@@ -9,7 +9,7 @@
  * @private
  */
 
-const path = require('node:path');
+const path = require('path');
 
 function returnStub(id, reason) {
   console.warn(`A stub middleware is created for operation ${id} because: ${reason}`);
