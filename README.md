@@ -2,7 +2,7 @@
 Create routes and validation for an express-like async server
 
 ## Summary
-This module will automatically adds parameters and message validators to your express-like async application (see [kafka-express](https://www.npmjs.com/package/kafka-express) or [rabbitmq-express](https://www.npmjs.com/package/rabbitmq-express)) from an [AsyncAPI](https://www.asyncapi.com/docs/reference/specification/v2.6.0) definition file. It will also mount your own middlewares if asked.  
+This module will automatically adds parameters, headers and message validators to your express-like async application (see [kafka-express](https://www.npmjs.com/package/kafka-express) or [rabbitmq-express](https://www.npmjs.com/package/rabbitmq-express)) from an [AsyncAPI](https://www.asyncapi.com/docs/reference/specification/v2.6.0) definition file. It will also mount your own middlewares if asked.  
 Freely inspired by [swagger-tools](https://www.npmjs.com/package/swagger-tools)  
   
 # Usage
@@ -19,7 +19,7 @@ await asyncApi(app, doc, { stubMiddleware: true });
 app.listen(options);
 ```
 This will validate and parse your AsyncAPI file (`myAsyncAPIFile.yaml`), then create a route for each channel with a publish operation defined in that file. The validation and parsing of the file is done by [@asyncapi/parser](https://www.npmjs.com/package/@asyncapi/parser).  
-This route will validate the parameters of the route and the body of the message with the parameter and payload schemas defined in the file and add them to the `api` property of the request object. The validation itself is done by [ajv](https://www.npmjs.com/package/ajv).  
+This route will validate the parameters of the route and the headers and body of the message with the parameter, headers and payload schemas defined in the file and add them to the `api` property of the request object. The validation itself is done by [ajv](https://www.npmjs.com/package/ajv).  
 It will then add a "stub" middleware on each route.  
   
 # Documentation
@@ -116,7 +116,7 @@ The controller file for this operation (`src/api/topic/myControllerFile.js`):
 ```javascript
 module.exports = {
   nameOfMyMiddleware: (req, res, next) => {
-    const { api: { params, body } } = req;
+    const { api: { params, headers, body } } = req;
     //do something
   }
 }
@@ -127,7 +127,7 @@ module.exports = {
   nameOfMyMiddleware: () => {
     return [
       (req, res, next) => {
-        const { api: { params, body } } = req;
+        const { api: { params, headers, body } } = req;
         //do something
       },
       (err, req, res, next) => {

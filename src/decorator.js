@@ -11,6 +11,7 @@
 const { parse, AsyncAPIDocument } = require('@asyncapi/parser');
 
 const validateParams = require('./middleware/validateParam');
+const validateHeaders = require('./middleware/validateHeaders');
 const validateBody = require('./middleware/validateBody');
 const callOperation = require('./middleware/operations');
 
@@ -53,13 +54,23 @@ async function decorateApplication(app, asyncApiDoc, options = {}) {
         required: [],
       });
 
+      const opeMsg = ope.message();
+
+      let headersSchema = {
+        type: 'object',
+      };
+      if (opeMsg && opeMsg.headers()) {
+        headersSchema = opeMsg.headers().json();
+      }
+
       prev.push({
         route: routeName,
         operation: {
           id: ope.id(),
           controller: ope.hasExtension(CONTROLLER_EXT) ? ope.ext(CONTROLLER_EXT) : '',
         },
-        payloadSchema: ope.message().originalPayload(),
+        payloadSchema: opeMsg.originalPayload(),
+        headersSchema,
         parametersSchema: msgParams,
       });
       return prev;
@@ -70,11 +81,12 @@ async function decorateApplication(app, asyncApiDoc, options = {}) {
   const l = listeners.length;
   for (let i = 0; i < l; i += 1) {
     const {
-      route, parametersSchema, payloadSchema, operation,
+      route, parametersSchema, headersSchema, payloadSchema, operation,
     } = listeners[i];
 
     const middlewares = [
       validateParams(parametersSchema),
+      validateHeaders(headersSchema),
       validateBody(payloadSchema),
     ];
     if (requireController) {

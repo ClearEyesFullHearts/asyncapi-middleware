@@ -55,7 +55,7 @@ describe('decorator tests', () => {
     };
     await decorator(app, doc, { controllers: 'test/utils/' });
 
-    expect(app.stack.length).toBe(3);
+    expect(app.stack.length).toBe(4);
   });
 
   test('decorator should decorate the application from text', async () => {
@@ -82,7 +82,7 @@ describe('decorator tests', () => {
     const app = new MockApp();
     await decorator(app, text, { stubMiddleware: true });
 
-    expect(app.stack.length).toBe(3);
+    expect(app.stack.length).toBe(4);
   });
 
   test('decorator should decorate the application from file', async () => {
@@ -90,7 +90,7 @@ describe('decorator tests', () => {
     const app = new MockApp();
     await decorator(app, text, { stubMiddleware: true });
 
-    expect(app.stack.length).toBe(12);
+    expect(app.stack.length).toBe(16);
   });
 
   test('decorator should decorate the application with tagged operations', async () => {
@@ -98,7 +98,7 @@ describe('decorator tests', () => {
     const app = new MockApp();
     await decorator(app, text, { stubMiddleware: true, tag: 'myApp' });
 
-    expect(app.stack.length).toBe(6);
+    expect(app.stack.length).toBe(8);
   });
 
   test('decorator should decorate the application from AsyncAPIDocument', async () => {
@@ -107,7 +107,7 @@ describe('decorator tests', () => {
     const app = new MockApp();
     await decorator(app, doc, { stubMiddleware: true });
 
-    expect(app.stack.length).toBe(12);
+    expect(app.stack.length).toBe(16);
   });
 
   test('decorator should not decorate the application without publish', async () => {
@@ -190,6 +190,6 @@ describe('decorator tests', () => {
     const app = new MockApp();
     await decorator(app, text, { requireController: false });
 
-    expect(app.stack.length).toBe(8);
+    expect(app.stack.length).toBe(12);
   });
 });

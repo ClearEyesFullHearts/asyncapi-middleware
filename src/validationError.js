@@ -3,6 +3,8 @@ class ValidationError extends Error {
 
   static BODY_VALIDATION_FAILURE = 'BODY_VALIDATION_FAILURE';
 
+  static HEADER_VALIDATION_FAILURE = 'HEADER_VALIDATION_FAILURE';
+
   constructor(type, message, details) {
     super(message);
     this.type = type;
