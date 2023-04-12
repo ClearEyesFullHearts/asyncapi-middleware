@@ -1,6 +1,6 @@
 {
   "name": "asyncapi-sub-middleware",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Create routes and validation for an express-like async server",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "consumer",
     "subscribe"
   ],
-  "homepage": "https://github.com/ClearEyesFullHearts/asyncapi-middleware#readme",
+  "homepage": "https://github.com/ClearEyesFullHearts/asyncapi-sub-middleware#readme",
   "dependencies": {
     "@asyncapi/parser": "^1.18.1",
     "ajv": "^8.12.0",
