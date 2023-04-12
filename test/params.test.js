@@ -12,6 +12,9 @@ describe('validateParam tests', () => {
       properties: {
         streetlightId: {
           type: 'string',
+          format: undefined,
+          enum: undefined,
+          pattern: undefined,
         },
       },
       required: [
@@ -99,7 +102,6 @@ describe('validateParam tests', () => {
     };
     middleware(req, null, next);
   });
-
   test('validateParam reject params with empty schema', (done) => {
     const schema = {
       type: 'object',
@@ -117,6 +119,118 @@ describe('validateParam tests', () => {
       expect(err).toBeInstanceOf(MyErrorType);
       expect(err.type).toBe(MyErrorType.PARAMS_VALIDATION_FAILURE);
       done();
+    };
+    middleware(req, null, next);
+  });
+  test('validateParam accepts enum formatting', (done) => {
+    const schema = {
+      type: 'object',
+      properties: {
+        action: {
+          type: 'string',
+          format: undefined,
+          enum: ['more', 'less'],
+          pattern: undefined,
+        },
+      },
+      required: [
+        'action',
+      ],
+    };
+
+    const req = {
+      params: { action: 'action' },
+    };
+
+    const middleware = validate(schema);
+
+    const next = (err) => {
+      expect(err).toBeInstanceOf(MyErrorType);
+      expect(err.type).toBe(MyErrorType.PARAMS_VALIDATION_FAILURE);
+      const req2 = {
+        params: { action: 'more' },
+      };
+      const next2 = (err2) => {
+        expect(req2.api.params.action).toBe('more');
+        done(err2);
+      };
+
+      middleware(req2, null, next2);
+    };
+    middleware(req, null, next);
+  });
+  test('validateParam accepts string formatting', (done) => {
+    const schema = {
+      type: 'object',
+      properties: {
+        address: {
+          type: 'string',
+          format: 'email',
+          enum: undefined,
+          pattern: undefined,
+        },
+      },
+      required: [
+        'address',
+      ],
+    };
+
+    const req = {
+      params: { address: 'action' },
+    };
+
+    const middleware = validate(schema);
+
+    const next = (err) => {
+      expect(err).toBeInstanceOf(MyErrorType);
+      expect(err.type).toBe(MyErrorType.PARAMS_VALIDATION_FAILURE);
+      const req2 = {
+        params: { address: 'test@example.com' },
+      };
+      const next2 = (err2) => {
+        expect(req2.api.params.address).toBe('test@example.com');
+        done(err2);
+      };
+
+      middleware(req2, null, next2);
+    };
+    middleware(req, null, next);
+  });
+
+  test('validateParam accepts string formatting', (done) => {
+    const schema = {
+      type: 'object',
+      properties: {
+        year: {
+          type: 'string',
+          format: undefined,
+          enum: undefined,
+          pattern: '^(19|20)\\d{2}$',
+        },
+      },
+      required: [
+        'year',
+      ],
+    };
+
+    const req = {
+      params: { year: 'aughts' },
+    };
+
+    const middleware = validate(schema);
+
+    const next = (err) => {
+      expect(err).toBeInstanceOf(MyErrorType);
+      expect(err.type).toBe(MyErrorType.PARAMS_VALIDATION_FAILURE);
+      const req2 = {
+        params: { year: '2005' },
+      };
+      const next2 = (err2) => {
+        expect(req2.api.params.year).toBe('2005');
+        done(err2);
+      };
+
+      middleware(req2, null, next2);
     };
     middleware(req, null, next);
   });

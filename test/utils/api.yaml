@@ -52,10 +52,12 @@ channels:
       message:
         $ref: '#/components/messages/lightMeasured'
 
-  smartylighting/streetlights/1/0/action/{streetlightId}/turn/on:
+  smartylighting/streetlights/1/0/action/{streetlightId}/turn/on/{action}:
     parameters:
       streetlightId:
         $ref: '#/components/parameters/streetlightId'
+      action:
+        $ref: '#/components/parameters/action'
     publish:
       operationId: turnOn
       traits:
@@ -195,6 +197,13 @@ components:
       description: The ID of the streetlight.
       schema:
         type: string
+    action:
+      description: The action.
+      schema:
+        type: string
+        enum:
+          - more
+          - less
 
   messageTraits:
     commonHeaders:

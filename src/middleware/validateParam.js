@@ -9,13 +9,14 @@
  * @private
  */
 const Ajv = require('ajv');
+const addFormats = require('ajv-formats');
 const ValidationError = require('../validationError');
 
 const ajv = new Ajv({ coerceTypes: true });
+addFormats(ajv);
 
 function validateParams(paramsSchema) {
   const validate = ajv.compile(paramsSchema);
-
   return (req, res, next) => {
     const { 0: ignoreIfExists, ...myParams } = req.params;
     const valid = validate(myParams);

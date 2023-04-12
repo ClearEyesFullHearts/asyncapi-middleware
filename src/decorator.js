@@ -37,13 +37,17 @@ async function decorateApplication(app, asyncApiDoc, options = {}) {
       const routeName = channelName.replace(/{/g, ':').replace(/}/g, '');
       const msgParams = Object.keys(chan.parameters()).reduce((prevP, pName) => {
         const { properties, required } = prevP;
-        const { type } = chan.parameter(pName).schema().json();
+        const {
+          type, format, enum: enumValues, pattern,
+        } = chan.parameter(pName).schema().json();
         return {
           type: 'object',
           additionalProperties: false,
           properties: {
             ...properties,
-            [pName]: { type },
+            [pName]: {
+              type, format, enum: enumValues, pattern,
+            },
           },
           required: [...required, pName],
         };
